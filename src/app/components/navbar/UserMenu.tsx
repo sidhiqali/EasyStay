@@ -4,14 +4,26 @@ import { AiOutlineMenu } from 'react-icons/ai';
 import Avatar from '../Avatar';
 import MenuItem from './MenuItem';
 import useRegisterModel from '@/app/Hooks/useRegisterModel';
+import useLoginModel from '@/app/Hooks/useLoginModel';
+import { User } from '@prisma/client';
+import { signOut } from 'next-auth/react';
 
 
-const UserMenu = () => {
+interface UserMenuProps {
+  currentUser?: User | null;
+}
+
+
+const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
   const [isOpen, setIsOpen] = useState(false);
-const registerModel = useRegisterModel()
+  const registerModel = useRegisterModel();
+  const loginModel = useLoginModel();
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
   }, []);
+
+  console.log(currentUser);
+  
 
   return (
     <div className='relative'>
@@ -36,8 +48,22 @@ const registerModel = useRegisterModel()
       {isOpen && (
         <div className='absolute rounded-xl shadow-md w-[40vw] md:w-3/4 bg-white overflow-hidden right-0 top-12 text-sm'>
           <div className='flex flex-col cursor-pointer'>
-            <MenuItem onclick={() => {}} label='Login' />
-            <MenuItem onclick={registerModel.onOpen} label='Signup' />
+            {currentUser  ? (
+              <>
+                <MenuItem onclick={() => {}} label='My trips' />
+                <MenuItem onclick={() => {}} label='My favourites' />
+                <MenuItem onclick={() => {}} label='My reservations' />
+                <MenuItem onclick={() => {}} label='My Properties' />
+                <MenuItem onclick={() => {}} label='Add My Home' />
+                <hr />
+                <MenuItem onclick={() => signOut()} label='Logout' />
+              </>
+            ) : (
+              <>
+                <MenuItem onclick={loginModel.onOpen} label='Login' />
+                <MenuItem onclick={registerModel.onOpen} label='Signup' />
+              </>
+            )}
           </div>
         </div>
       )}

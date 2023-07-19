@@ -1,11 +1,13 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Nunito } from 'next/font/google';
-import Navbar from '@/components/navbar/Navbar';
-import ClientOnly from '@/components/ClientOnly';
-import Modal from '@/components/modals/modal';
-import RegisterModal from '@/components/modals/RegisterModel';
+import Navbar from '@/app/components/navbar/Navbar';
+import ClientOnly from '@/app/components/ClientOnly';
+import Modal from '@/app/components/modals/modal';
+import RegisterModal from '@/app/components/modals/RegisterModel';
+import LoginModal from '@/app/components/modals/LoginModel';
 import ToasterProvider from './Providers/ToastProvider';
+import getCurrentUser from './actions/getCurrentUser';
 
 export const metadata: Metadata = {
   title: 'EasyStay',
@@ -16,18 +18,21 @@ const font = Nunito({
   subsets: ['latin'],
 });
 
-export default function RootLayout({
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const currentUser = await getCurrentUser()
   return (
     <html lang='en'>
       <body className={font.className}>
         <ClientOnly>
           <ToasterProvider />
+          <LoginModal />
           <RegisterModal />
-          <Navbar />
+          <Navbar currentUser={currentUser} />
         </ClientOnly>
         {children}
       </body>
